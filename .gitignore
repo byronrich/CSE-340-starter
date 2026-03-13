@@ -5,6 +5,7 @@
 
 # node_modules is a storage folder for Node and
 # can get very large.
+# Ignore dependencies
 node_modules
 
 # .env file is for local use only. It contains
