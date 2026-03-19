@@ -4,6 +4,8 @@ const app = express();
 const expressLayouts = require("express-ejs-layouts");
 const staticRoutes = require("./routes/static");
 const path = require("path");
+const inventoryRoute = require("./routes/inventoryRoute")
+
 
 // View engine
 app.set("view engine", "ejs");
@@ -18,6 +20,10 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", (req, res) => {
   res.render("layouts/index");
 });
+
+// Inventory routes
+app.use("/inv", inventoryRoute)
+
 
 // Static router
 app.use(staticRoutes);
