@@ -7,3 +7,4 @@ baseController.buildHome = async function(req, res){
 }
 
 module.exports = baseController
+let nav = await utilities.getNav()
