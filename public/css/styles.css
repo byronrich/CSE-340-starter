@@ -271,3 +271,25 @@ main#home {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+#vehicle-detail {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.detail-image img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.detail-info {
+  flex: 1;
+  min-width: 280px;
+}
+
+.price {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+}

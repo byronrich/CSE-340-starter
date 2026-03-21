@@ -1,3 +1,4 @@
+const utilities = require("./utilities/")
 const invModel = require("../models/inventory-model")
 const Util = {}
 
@@ -63,4 +64,27 @@ Util.buildClassificationGrid = async function(data){
  * Wrap other function in this for 
  * General Error Handling
  **************************************** */
-Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
+Util.handleErrors = fn => (req, res, next) =>
+   Promise.resolve(fn(req, res, next)).catch(next)
+/* **************************************
+* Build the vehicle detail HTML
+* ************************************ */
+Util.buildDetailView = async function (vehicle) {
+  let detail = `
+    <section id="vehicle-detail">
+      <div class="detail-image">
+        <img src="${vehicle.inv_image}" alt="Image of ${vehicle.inv_make} ${vehicle.inv_model}">
+      </div>
+
+      <div class="detail-info">
+        <h2>${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}</h2>
+        <span class="price">$${new Intl.NumberFormat('en-US').format(vehicle.inv_price)}</span>
+
+        <p><strong>Mileage:</strong> ${new Intl.NumberFormat('en-US').format(vehicle.inv_miles)} miles</p>
+        <p><strong>Description:</strong> ${vehicle.inv_description}</p>
+        <p><strong>Color:</strong> ${vehicle.inv_color}</p>
+      </div>
+    </section>
+  `
+  return detail
+}
