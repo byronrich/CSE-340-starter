@@ -3,10 +3,13 @@ require("dotenv").config()
 
 let pool
 
-// Local development (no SSL)
+// LOCAL DEVELOPMENT — uses SSL ONLY if DATABASE_URL points to Render
 if (process.env.NODE_ENV === "development") {
+  const isRenderDb = process.env.DATABASE_URL.includes("render.com")
+
   pool = new Pool({
-    connectionString: process.env.DATABASE_URL
+    connectionString: process.env.DATABASE_URL,
+    ssl: isRenderDb ? { rejectUnauthorized: false } : false
   })
 
   module.exports = {
@@ -23,13 +26,11 @@ if (process.env.NODE_ENV === "development") {
   }
 }
 
-// Render production (SSL required)
+// PRODUCTION ON RENDER — ALWAYS use SSL
 else {
   pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false
-    }
+    ssl: { rejectUnauthorized: false }
   })
 
   module.exports = pool

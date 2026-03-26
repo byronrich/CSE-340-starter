@@ -6,14 +6,33 @@ const env = require("dotenv").config()
 const app = express()
 const expressLayouts = require("express-ejs-layouts")
 const path = require("path")
+const accountRoute = require("./routes/accountRoute")
 
-// Routes & Controllers
-const staticRoutes = require("./routes/static")
-const inventoryRoute = require("./routes/inventoryRoute")
-const baseController = require("./controllers/baseController")
 
-// Utilities (needed for error handling + nav)
-const utilities = require("./utilities/")
+// Sessions & Flash
+const session = require("express-session")
+const pool = require("./database/")
+
+/******************************************
+ * Sessions & Flash Messages Middleware
+ ******************************************/
+app.use(session({
+  store: new (require('connect-pg-simple')(session))({
+    createTableIfMissing: true,
+    pool,
+  }),
+  secret: process.env.SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true,
+  name: 'sessionId',
+}))
+
+// Flash messages
+app.use(require('connect-flash')())
+app.use(function(req, res, next){
+  res.locals.messages = require('express-messages')(req, res)
+  next()
+})
 
 /******************************************
  * View Engine & Layouts
@@ -29,6 +48,14 @@ app.set("layout", "layouts/layout")
 app.use(express.static(path.join(__dirname, "public")))
 
 /******************************************
+ * Routes & Controllers
+ ******************************************/
+const staticRoutes = require("./routes/static")
+const inventoryRoute = require("./routes/inventoryRoute")
+const baseController = require("./controllers/baseController")
+const utilities = require("./utilities/")
+
+/******************************************
  * Routes
  ******************************************/
 
@@ -41,9 +68,11 @@ app.use("/inv", inventoryRoute)
 // Static routes
 app.use(staticRoutes)
 
+// Account routes
+app.use("/account", accountRoute)
+
 /******************************************
  * Intentional 500 Error Route
- * (Task 3 requirement)
  ******************************************/
 app.get("/error/trigger", (req, res, next) => {
   throw new Error("Intentional server crash")
@@ -66,7 +95,6 @@ app.use(async (err, req, res, next) => {
   let nav = await utilities.getNav()
   console.error(`Error at "${req.originalUrl}": ${err.message}`)
 
-  // Use generic message unless it's a 404
   let message
   if (err.status == 404) {
     message = err.message
