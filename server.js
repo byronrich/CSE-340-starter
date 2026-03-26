@@ -7,7 +7,7 @@ const app = express()
 const expressLayouts = require("express-ejs-layouts")
 const path = require("path")
 const accountRoute = require("./routes/accountRoute")
-
+const bodyParser = require("body-parser")
 
 // Sessions & Flash
 const session = require("express-session")
@@ -27,6 +27,12 @@ app.use(session({
   name: 'sessionId',
 }))
 
+/******************************************
+ * Body Parser Middleware
+ ******************************************/
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+
 // Flash messages
 app.use(require('connect-flash')())
 app.use(function(req, res, next){
@@ -39,8 +45,11 @@ app.use(function(req, res, next){
  ******************************************/
 app.set("view engine", "ejs")
 app.set("views", path.join(__dirname, "views"))
-app.use(expressLayouts)
-app.set("layout", "layouts/layout")
+
+app.use(expressLayouts)                 // REQUIRED
+app.set("layout", "layouts/layout")     // REQUIRED
+app.set("layout extractScripts", true)  // OPTIONAL but safe
+app.set("layout extractStyles", true)   // OPTIONAL but safe
 
 /******************************************
  * Static Files

@@ -52,6 +52,7 @@ body {
   background-color: #1f2933;
 }
 
+/* UL inside the NAV */
 .site-nav ul {
   list-style: none;
   margin: 0;
@@ -61,7 +62,8 @@ body {
   overflow-x: auto;
 }
 
-.site-nav a {
+/* Links inside the UL */
+.site-nav ul a {
   color: #e5e7eb;
   text-decoration: none;
   padding: 0.35rem 0.75rem;
@@ -70,9 +72,10 @@ body {
   white-space: nowrap;
 }
 
-.site-nav a.active,
-.site-nav a:hover,
-.site-nav a:focus {
+/* Active + hover states */
+.site-nav ul a.active,
+.site-nav ul a:hover,
+.site-nav ul a:focus {
   background-color: #2563eb;
   color: #f9fafb;
 }
@@ -271,6 +274,9 @@ main#home {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+/* Vehicle detail */
+
 #vehicle-detail {
   display: flex;
   gap: 2rem;
@@ -293,6 +299,9 @@ main#home {
   font-weight: bold;
   color: #333;
 }
+
+/* Login form */
+
 .login-form {
   max-width: 400px;
   margin: 1rem 0;
