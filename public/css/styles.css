@@ -320,3 +320,22 @@ main#home {
   font-size: 1rem;
   cursor: pointer;
 }
+.password-rules {
+  background: #eef5ff;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-left: 4px solid #4a90e2;
+  font-size: 0.9rem;
+}
+
+.password-rules ul {
+  margin: 5px 0 0 20px;
+}
+
+input:required:invalid {
+  border: 2px solid #d9534f;
+}
+
+input:required:valid {
+  border: 2px solid #5cb85c;
+}
