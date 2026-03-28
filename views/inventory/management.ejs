@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <main>
+    <h1>Vehicle Management</h1>
+
+    <!-- Flash Messages -->
+    <%- messages() %>
+
+    <p>Select an option below:</p>
+
+    <ul>
+      <li><a href="/inv/add-classification">Add New Classification</a></li>
+      <li><a href="/inv/add-inventory">Add New Vehicle</a></li>
+    </ul>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

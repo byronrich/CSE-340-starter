@@ -89,4 +89,17 @@ Util.buildDetailView = async function (vehicle) {
   return detail
 }
 
+Util.getNav = async function () {
+  let data = await invModel.getClassifications()
+  let list = "<ul>"
+  list += '<li><a href="/">Home</a></li>'
+  data.rows.forEach((row) => {
+    list += "<li>"
+    list += '<a href="/inv/type/' + row.classification_id + '">' + row.classification_name + "</a>"
+    list += "</li>"
+  })
+  list += "</ul>"
+  return list
+}
+
 module.exports = Util
