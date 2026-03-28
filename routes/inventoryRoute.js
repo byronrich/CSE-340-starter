@@ -2,19 +2,30 @@
 const express = require("express")
 const router = new express.Router()
 const invController = require("../controllers/invController")
+const utilities = require("../utilities/")              // <-- REQUIRED
+const invValidate = require("../utilities/inventory-validation") // <-- REQUIRED
 
 // Route to build inventory by classification view
-router.get("/type/:classificationId", invController.buildByClassificationId)
+router.get("/type/:classificationId", 
+  utilities.handleErrors(invController.buildByClassificationId)
+)
+
 // Route to build vehicle detail view
-router.get("/detail/:invId", invController.buildByInvId)
+router.get("/detail/:invId", 
+  utilities.handleErrors(invController.buildByInvId)
+)
+
+// Intentional error trigger
 router.get("/error/trigger", (req, res, next) => {
   throw new Error("Intentional server crash")
 })
+
 // Inventory Management View
 router.get(
   "/",
   utilities.handleErrors(invController.buildManagement)
 )
+
 // Deliver Add Classification View
 router.get(
   "/add-classification",
@@ -44,4 +55,3 @@ router.post(
 )
 
 module.exports = router
-
