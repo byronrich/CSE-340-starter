@@ -1,30 +1,49 @@
 /******************************************
+ * Environment Variables
+ ******************************************/
+require("dotenv").config()
+
+console.log("WORKING DIRECTORY:", process.cwd())
+console.log("ENV SECRET:", process.env.ACCESS_TOKEN_SECRET)
+
+/******************************************
  * Required Resources
  ******************************************/
 const express = require("express")
-const env = require("dotenv").config()
 const app = express()
 const expressLayouts = require("express-ejs-layouts")
 const path = require("path")
 const accountRoute = require("./routes/accountRoute")
 const bodyParser = require("body-parser")
-
-// Sessions & Flash
-const session = require("express-session")
-const pool = require("./database/")
+const cookieParser = require("cookie-parser")
+const utilities = require("./utilities/")
 
 /******************************************
- * Sessions & Flash Messages Middleware
+ * Cookie Parser (must come before JWT check)
  ******************************************/
+app.use(cookieParser())
+
+/******************************************
+ * Sessions & Flash (FIXED)
+ ******************************************/
+const session = require("express-session")
+const pool = require("./database/")
+const pgSession = require("connect-pg-simple")(session)
+
 app.use(session({
-  store: new (require('connect-pg-simple')(session))({
+  store: new pgSession({
     createTableIfMissing: true,
     pool,
   }),
   secret: process.env.SESSION_SECRET,
-  resave: true,
-  saveUninitialized: true,
-  name: 'sessionId',
+  resave: false,              // FIXED
+  saveUninitialized: false,   // FIXED
+  name: "sessionId",
+  cookie: {
+    httpOnly: true,
+    secure: false,            // FIXED for localhost
+    maxAge: 1000 * 60 * 60    // 1 hour
+  }
 }))
 
 /******************************************
@@ -33,12 +52,19 @@ app.use(session({
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-// Flash messages
-app.use(require('connect-flash')())
+/******************************************
+ * Flash Messages
+ ******************************************/
+app.use(require("connect-flash")())
 app.use(function(req, res, next){
-  res.locals.messages = require('express-messages')(req, res)
+  res.locals.messages = require("express-messages")(req, res)
   next()
 })
+
+/******************************************
+ * JWT Middleware (must come AFTER flash)
+ ******************************************/
+app.use(utilities.checkJWTToken)
 
 /******************************************
  * View Engine & Layouts
@@ -46,10 +72,10 @@ app.use(function(req, res, next){
 app.set("view engine", "ejs")
 app.set("views", path.join(__dirname, "views"))
 
-app.use(expressLayouts)                 // REQUIRED
-app.set("layout", "layouts/layout")     // REQUIRED
-app.set("layout extractScripts", true)  // OPTIONAL but safe
-app.set("layout extractStyles", true)   // OPTIONAL but safe
+app.use(expressLayouts)
+app.set("layout", "layouts/layout")
+app.set("layout extractScripts", true)
+app.set("layout extractStyles", true)
 
 /******************************************
  * Static Files
@@ -62,23 +88,20 @@ app.use(express.static(path.join(__dirname, "public")))
 const staticRoutes = require("./routes/static")
 const inventoryRoute = require("./routes/inventoryRoute")
 const baseController = require("./controllers/baseController")
-const utilities = require("./utilities/")
-
-/******************************************
- * Routes
- ******************************************/
 
 // Home route (wrapped in error handler)
 app.get("/", utilities.handleErrors(baseController.buildHome))
 
-// Inventory routes (wrapped in error handler)
+// Inventory routes
 app.use("/inv", inventoryRoute)
+
+// Account routes
+app.use("/account", accountRoute)
 
 // Static routes
 app.use(staticRoutes)
 
-// Account routes
-app.use("/account", accountRoute)
+
 
 /******************************************
  * Intentional 500 Error Route

@@ -11,6 +11,11 @@
   <main>
     <h1>Vehicle Management</h1>
 
+    <!-- Show logged-in user's name -->
+    <% if (accountData) { %>
+      <p class="welcome">Welcome, <%= accountData.account_firstname %>!</p>
+    <% } %>
+
     <!-- Flash Messages -->
     <%- messages() %>
 
@@ -21,6 +26,7 @@
       <li><a href="/inv/add-inventory">Add New Vehicle</a></li>
     </ul>
   </main>
+
 
   <%- include('../partials/footer') %>
 </body>

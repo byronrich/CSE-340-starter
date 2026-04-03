@@ -9,7 +9,7 @@ if (process.env.NODE_ENV === "development") {
 
   pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: isRenderDb ? { rejectUnauthorized: false } : false
+    ssl: isRenderDb ? { rejectUnauthorized: false } : false 
   })
 
   module.exports = {

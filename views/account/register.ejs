@@ -2,7 +2,7 @@
 
 <%- messages() %>
 
-<% if (errors) { %>
+<% if (errors && typeof errors.array === "function") { %>
   <ul class="notice">
     <% errors.array().forEach(error => { %>
       <li><%= error.msg %></li>

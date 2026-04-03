@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta-name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <main>
+    <h1>Account Management</h1>
+
+    <!-- Flash Messages -->
+    <%- messages() %>
+
+    <% if (accountData) { %>
+      <p>You're logged in as 
+        <strong><%= accountData.account_firstname %> <%= accountData.account_lastname %></strong>.
+      </p>
+    <% } else { %>
+      <p>You're logged in.</p>
+    <% } %>
+
+    <p>Use the navigation above to access other areas of the site.</p>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

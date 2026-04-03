@@ -59,12 +59,18 @@ invCont.buildByInvId = async function (req, res, next) {
 * *************************************** */
 invCont.buildManagement = async function (req, res, next) {
   let nav = await utilities.getNav()
+
+  // Pull the user's name from the JWT
+  const accountData = req.accountData
+
   res.render("inventory/management", {
     title: "Vehicle Management",
     nav,
     errors: null,
+    accountData  // <-- Pass user info to the view
   })
 }
+
 /* ****************************************
 *  Deliver Add Classification View
 * *************************************** */
