@@ -96,4 +96,85 @@ validate.checkLoginData = async (req, res, next) => {
   next()
 }
 
+/* ****************************************
+ *  Rules for updating account info
+ * **************************************** */
+validate.updateAccountRules = () => {
+  return [
+    body("account_firstname")
+      .trim()
+      .isLength({ min: 1 })
+      .withMessage("First name is required."),
+
+    body("account_lastname")
+      .trim()
+      .isLength({ min: 1 })
+      .withMessage("Last name is required."),
+
+    body("account_email")
+      .trim()
+      .isEmail()
+      .withMessage("A valid email is required.")
+      .custom(async (email, { req }) => {
+        const account_id = req.body.account_id
+        const existingEmail = await accountModel.checkExistingEmail(email)
+
+        // If email exists but belongs to a different account → error
+        if (existingEmail && existingEmail.account_id != account_id) {
+          throw new Error("Email already exists. Choose another.")
+        }
+      })
+  ]
+}
+
+/* ****************************************
+ *  Check update account data
+ * **************************************** */
+validate.checkUpdateAccountData = async (req, res, next) => {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    let nav = await utilities.getNav()
+    const accountData = await accountModel.getAccountById(req.body.account_id)
+
+    return res.render("account/update-account", {
+      title: "Update Account Information",
+      nav,
+      errors: errors.array(),
+      accountData
+    })
+  }
+  next()
+}
+
+/* ****************************************
+ *  Rules for updating password
+ * **************************************** */
+validate.updatePasswordRules = () => {
+  return [
+    body("account_password")
+      .trim()
+      .isStrongPassword()
+      .withMessage("Password does not meet requirements.")
+  ]
+}
+
+/* ****************************************
+ *  Check update password data
+ * **************************************** */
+validate.checkUpdatePasswordData = async (req, res, next) => {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    let nav = await utilities.getNav()
+    const accountData = await accountModel.getAccountById(req.body.account_id)
+
+    return res.render("account/update-account", {
+      title: "Update Account Information",
+      nav,
+      errors: errors.array(),
+      accountData
+    })
+  }
+  next()
+}
+
 module.exports = validate

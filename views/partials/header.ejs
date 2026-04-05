@@ -4,10 +4,22 @@
   </div>
 
   <div class="account-link">
+
     <% if (locals.accountData) { %>
+
+      <!-- Visible ONLY when logged in -->
+      <a href="/account/">
+        Welcome <%= locals.accountData.account_firstname %>
+      </a>
+
       <a href="/account/logout">Logout</a>
+
     <% } else { %>
+
+      <!-- Visible ONLY when NOT logged in -->
       <a href="/account/login">My Account</a>
+
     <% } %>
+
   </div>
 </header>

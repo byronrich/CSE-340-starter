@@ -27,13 +27,14 @@ router.get("/error/trigger", (req, res, next) => {
 })
 
 /* ****************************************
- * Protected Routes (Login Required)
+ * Protected Routes (Login + Employee/Admin Required)
  **************************************** */
 
 // Inventory Management View
 router.get(
   "/",
   utilities.checkJWTToken,
+  utilities.checkAccountType,
   utilities.handleErrors(invController.buildManagement)
 )
 
@@ -41,6 +42,7 @@ router.get(
 router.get(
   "/add-classification",
   utilities.checkJWTToken,
+  utilities.checkAccountType,
   utilities.handleErrors(invController.buildAddClassification)
 )
 
@@ -48,6 +50,7 @@ router.get(
 router.post(
   "/add-classification",
   utilities.checkJWTToken,
+  utilities.checkAccountType,
   invValidate.classificationRules(),
   invValidate.checkClassificationData,
   utilities.handleErrors(invController.addClassification)
@@ -57,6 +60,7 @@ router.post(
 router.get(
   "/add-inventory",
   utilities.checkJWTToken,
+  utilities.checkAccountType,
   utilities.handleErrors(invController.buildAddInventory)
 )
 
@@ -64,9 +68,54 @@ router.get(
 router.post(
   "/add-inventory",
   utilities.checkJWTToken,
+  utilities.checkAccountType,
   invValidate.inventoryRules(),
   invValidate.checkInventoryData,
   utilities.handleErrors(invController.addInventory)
 )
+
+// Edit inventory item view
+router.get(
+  "/edit/:inv_id",
+  utilities.checkJWTToken,
+  utilities.checkAccountType,
+  utilities.handleErrors(invController.buildEditInventory)
+)
+
+// Delete inventory item view
+router.get(
+  "/delete/:inv_id",
+  utilities.checkJWTToken,
+  utilities.checkAccountType,
+  utilities.handleErrors(invController.buildDeleteInventory)
+)
+
+// Process Update Inventory
+router.post(
+  "/update",
+  utilities.checkJWTToken,
+  utilities.checkAccountType,
+  utilities.handleErrors(invController.updateInventory)
+)
+
+// Process Delete Inventory
+router.post(
+  "/delete",
+  utilities.checkJWTToken,
+  utilities.checkAccountType,
+  utilities.handleErrors(invController.deleteInventory)
+)
+
+// Edit inventory item view
+router.get("/edit/:inv_id", utilities.handleErrors(invController.buildEditInventory))
+
+// Delete inventory item view
+router.get("/delete/:inv_id", utilities.handleErrors(invController.buildDeleteInventory))
+
+// Process Update Inventory
+router.post("/update", utilities.handleErrors(invController.updateInventory))
+
+// ⭐ Process Delete Inventory (required)
+router.post("/delete", utilities.handleErrors(invController.deleteInventory))
 
 module.exports = router

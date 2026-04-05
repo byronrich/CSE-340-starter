@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+</head>
+<body>
+
+  <%- include('../partials/header') %>
+
+  <main>
+    <h1><%= title %></h1>
+
+    <!-- Flash Messages -->
+    <%- messages() %>
+
+    <!-- Error Messages -->
+    <% if (errors && errors.length > 0) { %>
+      <div class="errors">
+        <ul>
+          <% errors.forEach(error => { %>
+            <li><%= error.msg %></li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } %>
+
+    <!-- =============================== -->
+    <!--  ACCOUNT UPDATE FORM (FORM #1)  -->
+    <!-- =============================== -->
+
+    <section>
+      <h2>Account Update</h2>
+
+      <form action="/account/update" method="post">
+
+        <label for="account_firstname">First Name</label>
+        <input 
+          type="text" 
+          id="account_firstname" 
+          name="account_firstname" 
+          value="<%= accountData.account_firstname %>" 
+          required
+        >
+
+        <label for="account_lastname">Last Name</label>
+        <input 
+          type="text" 
+          id="account_lastname" 
+          name="account_lastname" 
+          value="<%= accountData.account_lastname %>" 
+          required
+        >
+
+        <label for="account_email">Email</label>
+        <input 
+          type="email" 
+          id="account_email" 
+          name="account_email" 
+          value="<%= accountData.account_email %>" 
+          required
+        >
+
+        <!-- Hidden account_id -->
+        <input type="hidden" name="account_id" value="<%= accountData.account_id %>">
+
+        <button type="submit">Update Account</button>
+      </form>
+    </section>
+
+    <!-- =============================== -->
+    <!--  PASSWORD CHANGE FORM (FORM #2) -->
+    <!-- =============================== -->
+
+    <section>
+      <h2>Change Password</h2>
+
+      <p>
+        Enter a new password below to replace your current one.  
+        Password must meet the same requirements as registration  
+        (length, characters, etc.).
+      </p>
+
+      <form action="/account/update-password" method="post">
+
+        <label for="account_password">New Password</label>
+        <input 
+          type="password" 
+          id="account_password" 
+          name="account_password" 
+          required
+        >
+
+        <!-- Hidden account_id -->
+        <input type="hidden" name="account_id" value="<%= accountData.account_id %>">
+
+        <button type="submit">Change Password</button>
+      </form>
+    </section>
+
+  </main>
+
+  <%- include('../partials/footer') %>
+
+</body>
+</html>

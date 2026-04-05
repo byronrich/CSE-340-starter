@@ -62,5 +62,37 @@ router.post(
   utilities.handleErrors(accountController.accountLogin)
 )
 
+router.post("/update", utilities.handleErrors(invController.updateInventory))
+
+// Deliver Update Account View
+router.get(
+  "/update/:account_id",
+  utilities.checkJWTToken,
+  utilities.handleErrors(accountController.buildUpdateAccount)
+)
+
+// Process Account Information Update
+router.post(
+  "/update",
+  utilities.checkJWTToken,
+  accountValidate.updateAccountRules(),
+  accountValidate.checkUpdateAccountData,
+  utilities.handleErrors(accountController.updateAccount)
+)
+
+// Process Password Change
+router.post(
+  "/update-password",
+  utilities.checkJWTToken,
+  accountValidate.updatePasswordRules(),
+  accountValidate.checkUpdatePasswordData,
+  utilities.handleErrors(accountController.updatePassword)
+)
+
+// Logout Route
+router.get(
+  "/logout",
+  utilities.handleErrors(accountController.logout)
+)
 
 module.exports = router
