@@ -94,14 +94,27 @@ async function updatePassword(account_id, hashedPassword) {
   }
 }
 
-module.exports = {
-  getAccountById,
-  updateAccount,
-  updatePassword,
-  // ...existing exports
+/* ****************************************
+ *  Check if email exists (for validation)
+ * **************************************** */
+async function checkExistingEmail(account_email) {
+  try {
+    const sql = `SELECT account_id, account_email FROM account WHERE account_email = $1`
+    const result = await pool.query(sql, [account_email])
+    return result.rows[0]
+  } catch (error) {
+    throw error
+  }
 }
 
+/* ****************************************
+ *  EXPORTS
+ * **************************************** */
 module.exports = {
   registerAccount,
-  getAccountByEmail
+  getAccountByEmail,
+  checkExistingEmail,
+  getAccountById,
+  updateAccount,
+  updatePassword
 }

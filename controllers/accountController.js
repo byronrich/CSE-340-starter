@@ -69,7 +69,7 @@ async function registerAccount(req, res, next) {
 }
 
 /* ****************************************
- *  Process Login + Create JWT (SAFE VERSION)
+ *  Process Login + Create JWT
  * *************************************** */
 async function accountLogin(req, res, next) {
   const nav = await utilities.getNav()
@@ -77,29 +77,20 @@ async function accountLogin(req, res, next) {
   try {
     const { account_email, account_password } = req.body
 
-    console.log("🔍 LOGIN BODY:", req.body)
-
-    // Fetch account
     const account = await accountModel.getAccountByEmail(account_email)
-    console.log("🔍 ACCOUNT FROM DB:", account)
 
     if (!account) {
-      console.log("❌ No account found for:", account_email)
       req.flash("notice", "Invalid email or password.")
       return res.status(400).render("account/login", { title: "Login", nav, errors: null })
     }
 
-    // Compare password
     const validPassword = await bcrypt.compare(account_password, account.account_password)
-    console.log("🔍 BCRYPT RESULT:", validPassword)
 
     if (!validPassword) {
-      console.log("❌ Password mismatch for:", account_email)
       req.flash("notice", "Invalid email or password.")
       return res.status(400).render("account/login", { title: "Login", nav, errors: null })
     }
 
-    // Create JWT
     const payload = {
       account_id: account.account_id,
       account_firstname: account.account_firstname,
@@ -108,10 +99,7 @@ async function accountLogin(req, res, next) {
       account_type: account.account_type
     }
 
-    console.log("🔍 JWT PAYLOAD:", payload)
-
     const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" })
-    console.log("🔍 JWT CREATED")
 
     res.cookie("jwt", token, {
       httpOnly: true,
@@ -123,7 +111,7 @@ async function accountLogin(req, res, next) {
     return res.redirect("/account/")
 
   } catch (error) {
-    console.error("💥 LOGIN ERROR:", error)
+    console.error("LOGIN ERROR:", error)
     req.flash("notice", "A server error occurred during login.")
     return res.status(500).render("account/login", { title: "Login", nav, errors: null })
   }
@@ -134,7 +122,7 @@ async function accountLogin(req, res, next) {
  * *************************************** */
 async function buildAccountManagement(req, res, next) {
   const nav = await utilities.getNav()
-  return res.render("account/management", {
+  return res.render("account/account-management", {
     title: "Account Management",
     nav,
     errors: null,
@@ -144,13 +132,13 @@ async function buildAccountManagement(req, res, next) {
 
 /* ****************************************
  *  Deliver Update Account View
- * **************************************** */
-accountCont.buildUpdateAccount = async function (req, res, next) {
+ * *************************************** */
+async function buildUpdateAccount(req, res, next) {
   const account_id = parseInt(req.params.account_id)
   const accountData = await accountModel.getAccountById(account_id)
-  let nav = await utilities.getNav()
+  const nav = await utilities.getNav()
 
-  res.render("account/update-account", {
+  return res.render("account/update-account", {
     title: "Update Account Information",
     nav,
     errors: null,
@@ -160,9 +148,9 @@ accountCont.buildUpdateAccount = async function (req, res, next) {
 
 /* ****************************************
  *  Process Account Information Update
- * **************************************** */
-accountCont.updateAccount = async function (req, res, next) {
-  let nav = await utilities.getNav()
+ * *************************************** */
+async function updateAccount(req, res, next) {
+  const nav = await utilities.getNav()
 
   const {
     account_id,
@@ -203,13 +191,11 @@ accountCont.updateAccount = async function (req, res, next) {
 
 /* ****************************************
  *  Process Password Change
- * **************************************** */
-accountCont.updatePassword = async function (req, res, next) {
-  let nav = await utilities.getNav()
-
+ * *************************************** */
+async function updatePassword(req, res, next) {
+  const nav = await utilities.getNav()
   const { account_id, account_password } = req.body
 
-  // Hash the new password
   const hashedPassword = await bcrypt.hash(account_password, 10)
 
   const updateResult = await accountModel.updatePassword(
@@ -242,17 +228,24 @@ accountCont.updatePassword = async function (req, res, next) {
 
 /* ****************************************
  *  Logout Process
- * **************************************** */
-accountCont.logout = async function (req, res, next) {
-  res.clearCookie("jwt")  // delete the token cookie
+ * *************************************** */
+async function logout(req, res, next) {
+  res.clearCookie("jwt")
   req.flash("notice", "You have been logged out.")
   return res.redirect("/")
 }
 
+/* ****************************************
+ *  EXPORTS
+ * *************************************** */
 module.exports = {
   buildLogin,
   buildRegister,
   registerAccount,
   accountLogin,
-  buildAccountManagement
+  buildAccountManagement,
+  buildUpdateAccount,
+  updateAccount,
+  updatePassword,
+  logout
 }

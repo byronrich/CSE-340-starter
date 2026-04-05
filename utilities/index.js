@@ -148,7 +148,7 @@ Util.checkLogin = (req, res, next) => {
 /* ****************************************
  *  Check Account Type (Employee or Admin)
  * **************************************** */
-utilities.checkAccountType = function (req, res, next) {
+Util.checkAccountType = function (req, res, next) {
   const accountData = res.locals.accountData
 
   // Not logged in at all
@@ -166,5 +166,6 @@ utilities.checkAccountType = function (req, res, next) {
   // Authorized
   next()
 }
+
 
 module.exports = Util
