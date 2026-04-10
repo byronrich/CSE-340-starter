@@ -1,0 +1,35 @@
+<%- include('../partials/header') %>
+
+<main>
+  <h1>My Favorites</h1>
+
+  <% if (favorites.length === 0) { %>
+    <p class="notice">You have no favorite vehicles yet.</p>
+  <% } else { %>
+    <ul id="favorites-list">
+      <% favorites.forEach(fav => { %>
+        <li class="favorite-item">
+          <a href="/inv/detail/<%= fav.inv_id %>">
+            <img src="<%= fav.inv_thumbnail %>" 
+                 alt="Image of <%= fav.inv_make %> <%= fav.inv_model %>">
+          </a>
+
+          <div class="favorite-info">
+            <h2>
+              <a href="/inv/detail/<%= fav.inv_id %>">
+                <%= fav.inv_make %> <%= fav.inv_model %>
+              </a>
+            </h2>
+
+            <form action="/account/favorites/remove" method="POST">
+              <input type="hidden" name="inv_id" value="<%= fav.inv_id %>">
+              <button type="submit" class="remove-btn">Remove</button>
+            </form>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+</main>
+
+<%- include('../partials/footer') %>

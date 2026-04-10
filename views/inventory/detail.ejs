@@ -5,3 +5,17 @@
 <% } %>
 
 <%- detail %>
+
+<% if (isFavorite) { %>
+  <!-- REMOVE FROM FAVORITES BUTTON -->
+  <form action="/account/favorites/remove" method="POST" id="favorite-form">
+    <input type="hidden" name="inv_id" value="<%= vehicle.inv_id %>">
+    <button type="submit" class="remove-btn">❌ Remove from Favorites</button>
+  </form>
+<% } else { %>
+  <!-- ADD TO FAVORITES BUTTON -->
+  <form action="/account/favorites/add" method="POST" id="favorite-form">
+    <input type="hidden" name="inv_id" value="<%= vehicle.inv_id %>">
+    <button type="submit" class="favorite-btn">⭐ Add to Favorites</button>
+  </form>
+<% } %>

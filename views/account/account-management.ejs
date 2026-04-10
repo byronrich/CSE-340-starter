@@ -3,24 +3,52 @@
 <main>
   <h1><%= title %></h1>
 
-  <!-- Flash Messages -->
-  <%- messages() %>
-
-  <!-- Greeting (all users) -->
+  <!-- Greeting -->
   <h2>Welcome <%= accountData.account_firstname %></h2>
 
-  <!-- Update Account Information (all users) -->
-  <p>
-    <a href="/account/update/<%= accountData.account_id %>">
-      Update Account Information
-    </a>
-  </p>
+  <!-- Update Account Information -->
+  <section class="account-section">
+    <h3>Account Options</h3>
+    <p>
+      <a href="/account/update/<%= accountData.account_id %>">
+        Update Account Information
+      </a>
+    </p>
+  </section>
 
   <!-- Inventory Management (Employee/Admin ONLY) -->
   <% if (accountData.account_type === "Employee" || accountData.account_type === "Admin") { %>
-    <h3>Inventory Management</h3>
-    <p><a href="/inv/">Manage the Inventory</a></p>
+    <section class="account-section">
+      <h3>Inventory Management</h3>
+      <p><a href="/inv/">Manage the Inventory</a></p>
+    </section>
   <% } %>
+
+  <!-- ⭐ Favorites Quick List -->
+  <section class="account-section">
+    <h3>My Favorite Vehicles</h3>
+
+    <% if (!favorites || favorites.length === 0) { %>
+      <p>You have no favorite vehicles yet.</p>
+    <% } else { %>
+      <ul class="favorites-list">
+        <% favorites.forEach(fav => { %>
+          <li class="favorite-item">
+            <a href="/inv/detail/<%= fav.inv_id %>">
+              <% if (fav.inv_thumbnail) { %>
+                <img 
+                  src="<%= fav.inv_thumbnail %>" 
+                  alt="<%= fav.inv_make %> <%= fav.inv_model %>" 
+                  class="favorite-thumb"
+                >
+              <% } %>
+              <span><%= fav.inv_make %> <%= fav.inv_model %></span>
+            </a>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </section>
 
 </main>
 

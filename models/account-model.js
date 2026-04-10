@@ -108,6 +108,76 @@ async function checkExistingEmail(account_email) {
 }
 
 /* ****************************************
+ *  Add a vehicle to favorites
+ * **************************************** */
+async function addFavorite(account_id, inv_id) {
+  try {
+    const sql = `
+      INSERT INTO favorite (account_id, inv_id)
+      VALUES ($1, $2)
+      ON CONFLICT (account_id, inv_id) DO NOTHING
+      RETURNING *;
+    `
+    const result = await pool.query(sql, [account_id, inv_id])
+    return result.rows[0]
+  } catch (error) {
+    throw error
+  }
+}
+
+/* ****************************************
+ *  Remove a vehicle from favorites
+ * **************************************** */
+async function removeFavorite(account_id, inv_id) {
+  try {
+    const sql = `
+      DELETE FROM favorite
+      WHERE account_id = $1 AND inv_id = $2
+      RETURNING *;
+    `
+    const result = await pool.query(sql, [account_id, inv_id])
+    return result.rows[0]
+  } catch (error) {
+    throw error
+  }
+}
+
+/* ****************************************
+ *  Get all favorites for an account
+ * **************************************** */
+async function getFavoritesByAccount(account_id) {
+  try {
+    const sql = `
+      SELECT f.favorite_id, f.inv_id, i.inv_make, i.inv_model, i.inv_thumbnail
+      FROM favorite f
+      JOIN inventory i ON f.inv_id = i.inv_id
+      WHERE f.account_id = $1
+      ORDER BY i.inv_make, i.inv_model;
+    `
+    const result = await pool.query(sql, [account_id])
+    return result.rows
+  } catch (error) {
+    throw error
+  }
+}
+
+/* ****************************************
+ *  Check if a vehicle is already favorited
+ * **************************************** */
+async function checkFavorite(account_id, inv_id) {
+  try {
+    const sql = `
+      SELECT * FROM favorite
+      WHERE account_id = $1 AND inv_id = $2;
+    `
+    const result = await pool.query(sql, [account_id, inv_id])
+    return result.rows[0]
+  } catch (error) {
+    throw error
+  }
+}
+
+/* ****************************************
  *  EXPORTS
  * **************************************** */
 module.exports = {
@@ -116,5 +186,10 @@ module.exports = {
   checkExistingEmail,
   getAccountById,
   updateAccount,
-  updatePassword
+  updatePassword,
+  addFavorite,
+  removeFavorite,
+  getFavoritesByAccount,
+  checkFavorite
 }
+

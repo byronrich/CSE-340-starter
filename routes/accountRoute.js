@@ -88,4 +88,29 @@ router.get(
   utilities.handleErrors(accountController.logout)
 )
 
+/* ****************************************
+ *  Favorites Routes
+ * **************************************** */
+
+// View all favorites
+router.get(
+  "/favorites",
+  utilities.checkLogin,
+  utilities.handleErrors(accountController.buildFavoritesView)
+)
+
+// Add a favorite
+router.post(
+  "/favorites/add",
+  utilities.checkLogin,
+  utilities.handleErrors(accountController.addFavorite)
+)
+
+// Remove a favorite
+router.post(
+  "/favorites/remove",
+  utilities.checkLogin,
+  utilities.handleErrors(accountController.removeFavorite)
+)
+
 module.exports = router

@@ -48,10 +48,10 @@ async function registerAccount(req, res, next) {
     )
 
     if (regResult) {
-      req.flash("notice", "Registration successful. Please log in.")
+      req.flash("success", "Registration successful. Please log in.")
       return res.redirect("/account/login")
     } else {
-      req.flash("notice", "Registration failed.")
+      req.flash("error", "Registration failed.")
       return res.render("account/register", {
         title: "Registration",
         nav,
@@ -63,7 +63,7 @@ async function registerAccount(req, res, next) {
     }
   } catch (error) {
     console.error("Registration Error:", error)
-    req.flash("notice", "Registration failed due to a server error.")
+    req.flash("error", "Registration failed due to a server error.")
     return res.redirect("/account/register")
   }
 }
@@ -80,14 +80,14 @@ async function accountLogin(req, res, next) {
     const account = await accountModel.getAccountByEmail(account_email)
 
     if (!account) {
-      req.flash("notice", "Invalid email or password.")
+      req.flash("error", "Invalid email or password.")
       return res.status(400).render("account/login", { title: "Login", nav, errors: null })
     }
 
     const validPassword = await bcrypt.compare(account_password, account.account_password)
 
     if (!validPassword) {
-      req.flash("notice", "Invalid email or password.")
+      req.flash("error", "Invalid email or password.")
       return res.status(400).render("account/login", { title: "Login", nav, errors: null })
     }
 
@@ -107,12 +107,12 @@ async function accountLogin(req, res, next) {
       maxAge: 3600000
     })
 
-    req.flash("notice", `Welcome back, ${account.account_firstname}.`)
+    req.flash("success", `Welcome back, ${account.account_firstname}.`)
     return res.redirect("/account/")
 
   } catch (error) {
     console.error("LOGIN ERROR:", error)
-    req.flash("notice", "A server error occurred during login.")
+    req.flash("error", "A server error occurred during login.")
     return res.status(500).render("account/login", { title: "Login", nav, errors: null })
   }
 }
@@ -122,11 +122,17 @@ async function accountLogin(req, res, next) {
  * *************************************** */
 async function buildAccountManagement(req, res, next) {
   const nav = await utilities.getNav()
+  const account_id = res.locals.accountData.account_id
+
+  // ⭐ Load favorites for quick list
+  const favorites = await accountModel.getFavoritesByAccount(account_id)
+
   return res.render("account/account-management", {
     title: "Account Management",
     nav,
     errors: null,
-    accountData: res.locals.accountData || null
+    accountData: res.locals.accountData,
+    favorites
   })
 }
 
@@ -167,7 +173,7 @@ async function updateAccount(req, res, next) {
   )
 
   if (updateResult) {
-    req.flash("notice", "Account information updated successfully.")
+    req.flash("success", "Account information updated successfully.")
     const updatedAccount = await accountModel.getAccountById(account_id)
 
     return res.render("account/account-management", {
@@ -177,7 +183,7 @@ async function updateAccount(req, res, next) {
       accountData: updatedAccount
     })
   } else {
-    req.flash("notice", "Update failed.")
+    req.flash("error", "Update failed.")
     const accountData = await accountModel.getAccountById(account_id)
 
     return res.render("account/update-account", {
@@ -204,7 +210,7 @@ async function updatePassword(req, res, next) {
   )
 
   if (updateResult) {
-    req.flash("notice", "Password updated successfully.")
+    req.flash("success", "Password updated successfully.")
     const updatedAccount = await accountModel.getAccountById(account_id)
 
     return res.render("account/account-management", {
@@ -214,7 +220,7 @@ async function updatePassword(req, res, next) {
       accountData: updatedAccount
     })
   } else {
-    req.flash("notice", "Password update failed.")
+    req.flash("error", "Password update failed.")
     const accountData = await accountModel.getAccountById(account_id)
 
     return res.render("account/update-account", {
@@ -231,8 +237,69 @@ async function updatePassword(req, res, next) {
  * *************************************** */
 async function logout(req, res, next) {
   res.clearCookie("jwt")
-  req.flash("notice", "You have been logged out.")
+  req.flash("success", "You have been logged out.")
   return res.redirect("/")
+}
+
+/* ****************************************
+ *  Build Favorites View
+ * **************************************** */
+async function buildFavoritesView(req, res, next) {
+  try {
+    const nav = await utilities.getNav()
+    const account_id = res.locals.accountData.account_id
+
+    const favorites = await accountModel.getFavoritesByAccount(account_id)
+
+    return res.render("account/favorites", {
+      title: "My Favorites",
+      nav,
+      errors: null,
+      favorites
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/* ****************************************
+ *  Add Favorite
+ * **************************************** */
+async function addFavorite(req, res, next) {
+  try {
+    const account_id = res.locals.accountData.account_id
+    const { inv_id } = req.body
+
+    const exists = await accountModel.checkFavorite(account_id, inv_id)
+
+    if (!exists) {
+      await accountModel.addFavorite(account_id, inv_id)
+      req.flash("success", "Vehicle added to favorites.")
+    } else {
+      req.flash("error", "This vehicle is already in your favorites.")
+    }
+
+    return res.redirect(`/inv/detail/${inv_id}`)
+  } catch (error) {
+    next(error)
+  }
+}
+
+/* ****************************************
+ *  Remove Favorite
+ * **************************************** */
+async function removeFavorite(req, res, next) {
+  try {
+    const account_id = res.locals.accountData.account_id
+    const { inv_id } = req.body
+
+    await accountModel.removeFavorite(account_id, inv_id)
+
+    req.flash("success", "Vehicle removed from favorites.")
+    return res.redirect(`/inv/detail/${inv_id}`)
+  } catch (error) {
+    next(error)
+  }
 }
 
 /* ****************************************
@@ -247,5 +314,8 @@ module.exports = {
   buildUpdateAccount,
   updateAccount,
   updatePassword,
-  logout
+  logout,
+  buildFavoritesView,
+  addFavorite,
+  removeFavorite
 }

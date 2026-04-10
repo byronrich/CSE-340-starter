@@ -1,4 +1,5 @@
 const invModel = require("../models/inventory-model")
+const accountModel = require("../models/account-model") // ⭐ REQUIRED FOR FAVORITES
 const utilities = require("../utilities/")
 
 const invCont = {}
@@ -43,12 +44,23 @@ invCont.buildByInvId = async function (req, res, next) {
     })
   }
 
-  const detail = await utilities.buildDetailView(data[0])
+  const vehicle = data[0]
+  const detail = await utilities.buildDetailView(vehicle)
+
+  // ⭐ NEW: Check if this vehicle is already a favorite
+  let isFavorite = false
+  if (res.locals.loggedin) {
+    const account_id = res.locals.accountData.account_id
+    const exists = await accountModel.checkFavorite(account_id, invId)
+    isFavorite = !!exists
+  }
 
   res.render("./inventory/detail", {
-    title: `${data[0].inv_make} ${data[0].inv_model}`,
+    title: `${vehicle.inv_make} ${vehicle.inv_model}`,
     nav,
-    detail
+    detail,
+    vehicle,
+    isFavorite  // ⭐ REQUIRED FOR BUTTON LOGIC
   })
 }
 

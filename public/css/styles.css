@@ -339,3 +339,67 @@ input:required:invalid {
 input:required:valid {
   border: 2px solid #5cb85c;
 }
+
+#favorites-list {
+  list-style: none;
+  padding: 0;
+}
+
+.favorite-item {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+
+.favorite-item img {
+  width: 150px;
+  border-radius: 6px;
+}
+
+.favorite-info h2 {
+  margin: 0;
+}
+
+.favorite-btn,
+.remove-btn {
+  background-color: #ffcc00;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.remove-btn {
+  background-color: #cc0000;
+  color: white;
+}
+
+.account-section {
+  margin-top: 2rem;
+}
+
+.favorites-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.favorite-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.favorite-item a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.favorite-thumb {
+  width: 60px;
+  height: auto;
+  border-radius: 4px;
+}
