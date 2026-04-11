@@ -4,18 +4,33 @@
   <% res.redirect('/') %>
 <% } %>
 
+<!-- Vehicle Detail HTML -->
 <%- detail %>
 
+<!-- Favorites Button -->
 <% if (isFavorite) { %>
-  <!-- REMOVE FROM FAVORITES BUTTON -->
-  <form action="/account/favorites/remove" method="POST" id="favorite-form">
+  <!-- REMOVE FROM FAVORITES -->
+  <form action="/account/favorites/remove" method="POST" class="favorite-form">
     <input type="hidden" name="inv_id" value="<%= vehicle.inv_id %>">
     <button type="submit" class="remove-btn">❌ Remove from Favorites</button>
   </form>
 <% } else { %>
-  <!-- ADD TO FAVORITES BUTTON -->
-  <form action="/account/favorites/add" method="POST" id="favorite-form">
+  <!-- ADD TO FAVORITES -->
+  <form action="/account/favorites/add" method="POST" class="favorite-form">
     <input type="hidden" name="inv_id" value="<%= vehicle.inv_id %>">
     <button type="submit" class="favorite-btn">⭐ Add to Favorites</button>
   </form>
 <% } %>
+
+<!-- Client-Side Validation -->
+<script>
+  document.querySelectorAll(".favorite-form").forEach(form => {
+    form.addEventListener("submit", (e) => {
+      const id = form.querySelector("input[name='inv_id']").value
+      if (!id || isNaN(id)) {
+        alert("Invalid vehicle ID.")
+        e.preventDefault()
+      }
+    })
+  })
+</script>
