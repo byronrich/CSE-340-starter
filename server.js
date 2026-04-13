@@ -3,8 +3,9 @@
  ******************************************/
 require("dotenv").config()
 
-console.log("WORKING DIRECTORY:", process.cwd())
 console.log("ENV SECRET:", process.env.ACCESS_TOKEN_SECRET)
+console.log("WORKING DIRECTORY:", process.cwd())
+
 
 /******************************************
  * Required Resources
